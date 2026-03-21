@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Project Title and Short Description
+## 1. Bionium-X
 **Bionium-X** is a research-grade, AI-based open-source platform designed to detect potential biosignatures in exoplanet atmospheres using transmission and emission spectral data. By parsing highly-dimensional signals from orbital telescopes, the system probabilistically estimates the presence of critical biological precursors—thereby advancing the automated search for extraterrestrial life.
 
 ## 2. Overview and Scientific Motivation
