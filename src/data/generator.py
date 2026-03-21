@@ -84,8 +84,7 @@ class SpectrumGenerator:
 
         df_flux = pd.DataFrame(
             data, columns=[
-                f"wl_{
-                    w:.3f}" for w in self.wavelengths])
+                f"wl_{w:.3f}" for w in self.wavelengths])
         df_labels = pd.DataFrame(labels)
 
         return self.wavelengths, df_flux, df_labels

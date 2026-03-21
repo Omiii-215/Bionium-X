@@ -98,33 +98,17 @@ def run_pipeline(n_samples=500, save_dir='saved_models'):
     )
     y_pred_dl = (test_probas > 0.5).astype(int)
     print("CNN Metrics:")
-    print(
-        f"  precision: {
-            precision_score(
-                y_test_dl,
-                y_pred_dl,
-                average='macro',
-                zero_division=0):.4f}")
-    print(
-        f"  recall: {
-            recall_score(
-                y_test_dl,
-                y_pred_dl,
-                average='macro',
-                zero_division=0):.4f}")
-    print(
-        f"  f1: {
-            f1_score(
-                y_test_dl,
-                y_pred_dl,
-                average='macro',
-                zero_division=0):.4f}")
-    print(
-        f"  roc_auc: {
-            roc_auc_score(
-                y_test_dl,
-                test_probas,
-                average='macro'):.4f}")
+    p_score = precision_score(y_test_dl, y_pred_dl, average='macro', zero_division=0)
+    print(f"  precision: {p_score:.4f}")
+
+    r_score = recall_score(y_test_dl, y_pred_dl, average='macro', zero_division=0)
+    print(f"  recall: {r_score:.4f}")
+
+    f_score = f1_score(y_test_dl, y_pred_dl, average='macro', zero_division=0)
+    print(f"  f1: {f_score:.4f}")
+
+    roc = roc_auc_score(y_test_dl, test_probas, average='macro')
+    print(f"  roc_auc: {roc:.4f}")
 
     torch.save(cnn.state_dict(), os.path.join(save_dir, 'cnn_model.pth'))
 
