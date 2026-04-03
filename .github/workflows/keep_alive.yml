@@ -10,11 +10,34 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Streamlit App
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
         run: |
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://bionium-x.streamlit.app/)
-          echo "HTTP Status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "::warning::App responded with HTTP $HTTP_STATUS (expected 200)"
-          fi
-          echo "✅ Keep-alive ping sent at $(date -u)"
+          pip install playwright
+          playwright install chromium
+
+      - name: Ping and Wake Streamlit App
+        run: |
+          python -c "
+          from playwright.sync_api import sync_playwright
+          
+          with sync_playwright() as p:
+              browser = p.chromium.launch(headless=True)
+              page = browser.new_page()
+              print('Navigating to Streamlit app...')
+              page.goto('https://bionium-x.streamlit.app/', wait_until='networkidle')
+              
+              wakeup_button = page.locator(\"button:has-text('Yes, get this app back up!')\")
+              if wakeup_button.count() > 0:
+                  print('App is sleeping. Clicking wake up button...')
+                  wakeup_button.click()
+                  page.wait_for_timeout(10000)
+              else:
+                  print('App is awake.')
+              
+              browser.close()
+          "
