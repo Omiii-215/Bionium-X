@@ -17,34 +17,68 @@ st.set_page_config(page_title="Bionium-X Lab", layout="wide", initial_sidebar_st
 def inject_custom_css():
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-        /* Global Theme overrides */
-        html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
-        .data-label { font-family: 'JetBrains Mono', monospace !important; font-weight: 500; color: #2563EB; }
+        /* Global Theme overrides & Swiss Base */
+        html, body, [class*="css"] { 
+            font-family: 'Inter', sans-serif !important; 
+            letter-spacing: -0.02em;
+        }
+        
+        .swiss-noise {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999; opacity: 0.015;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        .data-label { font-family: 'JetBrains Mono', monospace !important; font-weight: 700; color: #000000; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* Top Header */
-        .nav-brand { font-size: 1.5rem; font-weight: 700; color: #111827; letter-spacing: -0.5px; white-space: nowrap; }
-        .nav-status { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #059669; background: #D1FAE5; padding: 6px 12px; border-radius: 6px; border: 1px solid #A7F3D0; white-space: nowrap; font-weight: 500; }
+        .nav-brand { font-size: 2.5rem; font-weight: 900; color: #000000; letter-spacing: -2px; white-space: nowrap; text-transform: uppercase; }
+        .nav-status { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #000000; background: #FFFFFF; padding: 6px 16px; border: 2px solid #000000; white-space: nowrap; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
         
-        /* Information Card */
-        .info-card { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 15px; margin-bottom: 15px; color: #374151; font-size: 0.95rem; }
+        .info-card { 
+            background: #F2F2F2; 
+            border: 2px solid #000000; 
+            border-radius: 0px; 
+            padding: 24px; 
+            margin-bottom: 24px; 
+            color: #000000; 
+            font-size: 1.05rem;
+            position: relative;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: center center;
+        }
 
         /* Biosignature Strength Bar */
-        .strength-row { margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .strength-label { width: 40px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 500;}
-        .strength-bar-bg { flex-grow: 1; background-color: #F3F4F6; height: 8px; border-radius: 4px; margin: 0 15px; overflow: hidden; border: 1px solid #E5E7EB; }
-        .strength-bar-fill { height: 100%; border-radius: 4px; }
-        .strength-val { width: 40px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+        .strength-row { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .strength-label { width: 50px; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 900; text-transform: uppercase; }
+        .strength-bar-bg { flex-grow: 1; background-color: #F2F2F2; height: 16px; border-radius: 0px; margin: 0 20px; overflow: hidden; border: 2px solid #000000; }
+        .strength-bar-fill { height: 100%; border-radius: 0px; }
+        .strength-val { width: 50px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; }
 
-        /* Hide default Streamlit paddings & make Header transparent */
+        /* Streamlit Overrides */
         .block-container { padding-top: 2.5rem !important; padding-bottom: 2rem !important; max-width: 95% !important; }
         header[data-testid="stHeader"] { background: transparent !important; }
+        .stButton>button { border-radius: 0px !important; border: 2px solid #000000 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0s; }
+        .stButton>button:hover { background-color: #FF3000 !important; color: #FFFFFF !important; border-color: #000000 !important; }
+        
+        /* Typography overrides */
+        h1, h2, h3 { font-weight: 900 !important; text-transform: uppercase; letter-spacing: -0.05em; color: #000000 !important;}
+        hr { border-top: 2px solid #000000; }
         
         /* Native tabs styling overrides */
-        [data-baseweb="tab-list"] { gap: 24px; }
-        [data-baseweb="tab"] { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; }
+        [data-baseweb="tab-list"] { gap: 32px; border-bottom: 2px solid #E5E7EB; }
+        [data-baseweb="tab"] { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; padding-bottom: 12px;}
+        [data-baseweb="tab"][aria-selected="true"] { border-bottom: 4px solid #000000 !important; }
+        [aria-selected="true"] p { color: #000000 !important; }
+        
+        /* Streamlit badges pill removal */
+        div[data-testid="stExpander"] { border: 2px solid #000000; border-radius: 0px; }
+        div[data-testid="stSidebar"] { border-right: 4px solid #000000; }
         </style>
+        <div class="swiss-noise"></div>
     """, unsafe_allow_html=True)
 
 inject_custom_css()
@@ -52,7 +86,7 @@ inject_custom_css()
 # --- Header & Status ---
 target_display = st.session_state.get('target_name', 'No Target Loaded')
 st.markdown(f"""
-<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #E5E7EB; margin-bottom: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; border-bottom: 4px solid #000000; margin-bottom: 24px;">
     <div class="nav-brand">Bionium-X</div>
     <div class="nav-status">Target: {target_display} | Model: CNN v2 | Status: Ready</div>
 </div>
@@ -81,30 +115,25 @@ def load_models():
 rf_model, cnn_model = load_models()
 
 # --- Sidebar: Data & Controls ---
-st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-bottom: 8px;'>Data Source</div>", unsafe_allow_html=True)
+st.sidebar.markdown("<div style='font-size: 0.9rem; font-weight: 900; color: #000000; margin-bottom: 12px; letter-spacing: 0.2em; text-transform: uppercase;'>01. Data Source</div>", unsafe_allow_html=True)
 data_source = st.sidebar.radio("Select source:", ["Known Exoplanet Catalog", "Generate Synthetic", "Upload File (CSV/FITS)"], label_visibility="collapsed")
 
 wl = None
 flux = None
 true_labels = {}
 
-st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Spectral Band Highlight</div>", unsafe_allow_html=True)
-show_o2 = st.sidebar.checkbox("O2 (0.76 µm)", value=True)
-show_ch4 = st.sidebar.checkbox("CH4 (1.65 µm)", value=True)
-show_o3 = st.sidebar.checkbox("O3 (9.6 µm)", value=False)
-show_h2o = st.sidebar.checkbox("H2O (1.4 µm)", value=True)
-show_co2 = st.sidebar.checkbox("CO2 (4.3 µm)", value=False)
+
 
 if data_source == "Known Exoplanet Catalog":
     import json
     with open('data/exoplanet_catalog.json', 'r') as f:
         planet_db = json.load(f)
 
-    st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Database Search</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='font-size: 0.85rem; font-weight: 900; color: #000000; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase;'>Target Catalog</div>", unsafe_allow_html=True)
     known_planet = st.sidebar.selectbox("Search Catalog", list(planet_db.keys()), label_visibility="collapsed")
     
     p = planet_db[known_planet]
-    st.sidebar.markdown(f"<div class='info-card' style='margin-top: 10px; font-size: 0.85rem;'><b>Host Star:</b> {p['star']}<br><b>Radius:</b> {p['rad']} R<sub>⊕</sub><br><b>Eq. Temp:</b> {p['temp']} K</div>", unsafe_allow_html=True)
+    st.sidebar.markdown(f"<div class='info-card' style='margin-top: 10px; font-size: 0.9rem; line-height: 1.6;'><b>Host Star:</b> {p['star']}<br><b>Radius:</b> {p['rad']} R<sub>⊕</sub><br><b>Eq. Temp:</b> {p['temp']} K</div>", unsafe_allow_html=True)
     
     with st.sidebar.expander("Top Habitable Candidates"):
         candidates = []
@@ -138,15 +167,15 @@ if data_source == "Known Exoplanet Catalog":
         st.rerun()
 
 elif data_source == "Generate Synthetic":
-    st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Physical Parameters</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='font-size: 0.85rem; font-weight: 900; color: #000000; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase;'>Physical Parameters</div>", unsafe_allow_html=True)
     override_rad = st.sidebar.slider("Planet Radius (Earth = 1)", 0.1, 8.0, 1.0, 0.1)
     override_temp = st.sidebar.slider("Equilibrium Temp (K)", 100, 1500, 288, 10)
 
-    st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Instrument Physics</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='font-size: 0.85rem; font-weight: 900; color: #000000; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase;'>Instrument Physics</div>", unsafe_allow_html=True)
     telescope = st.sidebar.selectbox("Telescope Model", ["JWST (Ideal)", "Hubble (Narrow Band)", "Ground-based (Noisy)"], label_visibility="collapsed")
     simulate_flare = st.sidebar.button("Simulate Stellar Flare", type="secondary")
 
-    st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Molecule Injection</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='font-size: 0.85rem; font-weight: 900; color: #000000; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase;'>Molecule Injection</div>", unsafe_allow_html=True)
     inject_O2 = st.sidebar.checkbox("Inject O2", value=True)
     inject_CH4 = st.sidebar.checkbox("Inject CH4", value=True)
     inject_O3 = st.sidebar.checkbox("Inject O3", value=False)
@@ -191,7 +220,7 @@ elif data_source == "Generate Synthetic":
         st.rerun()
 
 elif data_source == "Upload File (CSV/FITS)":
-    st.sidebar.markdown("<div style='font-size: 1.05rem; font-weight: 600; color: #111827; margin-top: 24px; margin-bottom: 8px; border-top: 1px solid #E5E7EB; padding-top: 20px;'>Upload Spectrum</div>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div style='font-size: 0.85rem; font-weight: 900; color: #000000; margin-top: 24px; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase;'>Upload Spectrum</div>", unsafe_allow_html=True)
     uploaded_file = st.sidebar.file_uploader("Upload file", type=["csv", "fits"], label_visibility="collapsed")
     
     if uploaded_file is not None:
@@ -219,6 +248,13 @@ elif data_source == "Upload File (CSV/FITS)":
         elif uploaded_file.name.endswith('.fits'):
             st.sidebar.info("FITS parsing is a placeholder. Please use CSV for now.")
 
+st.sidebar.markdown("<div style='font-size: 0.9rem; font-weight: 900; color: #000000; margin-top: 32px; margin-bottom: 12px; border-top: 2px solid #000000; padding-top: 24px; letter-spacing: 0.2em; text-transform: uppercase;'>02. Spectral Band Highlight</div>", unsafe_allow_html=True)
+show_o2 = st.sidebar.checkbox("O2 (0.76 µm)", value=True)
+show_ch4 = st.sidebar.checkbox("CH4 (1.65 µm)", value=True)
+show_o3 = st.sidebar.checkbox("O3 (9.6 µm)", value=False)
+show_h2o = st.sidebar.checkbox("H2O (1.4 µm)", value=True)
+show_co2 = st.sidebar.checkbox("CO2 (4.3 µm)", value=False)
+
 # --- Main Dashboard Layout ---
 with tab_dash:
     if 'wl' in st.session_state and 'flux' in st.session_state:
@@ -235,17 +271,17 @@ with tab_dash:
             fig.add_trace(go.Scatter(
                 x=wl, y=flux,
                 mode='lines',
-                line=dict(color='#2563EB', width=1.5),
+                line=dict(color='#000000', width=2.0),
                 name='Observed Flux',
                 hovertemplate='Wavelength: %{x:.2f}µm<br>Flux: %{y:.4f}<extra></extra>'
             ))
 
             # Highlights - Light Theme colors
-            features = {'O2': (0.76, '#3B82F6', show_o2),
-                        'CH4': (1.65, '#10B981', show_ch4),
-                        'H2O': (1.40, '#6366F1', show_h2o),
-                        'O3': (9.60, '#8B5CF6', show_o3),
-                        'CO2': (4.30, '#EF4444', show_co2)}
+            features = {'O2': (0.76, '#000000', show_o2),
+                        'CH4': (1.65, '#000000', show_ch4),
+                        'H2O': (1.40, '#000000', show_h2o),
+                        'O3': (9.60, '#FF3000', show_o3),
+                        'CO2': (4.30, '#000000', show_co2)}
             
             for mol, (center, color, show) in features.items():
                 if show:
@@ -259,9 +295,10 @@ with tab_dash:
             fig.update_layout(
                 template="plotly_white",
                 margin=dict(l=0, r=0, t=20, b=0),
-                xaxis=dict(title='Wavelength of Light (microns)', gridcolor='#E5E7EB', zerolinecolor='#E5E7EB'),
-                yaxis=dict(title='Amount of Light Blocked', gridcolor='#E5E7EB', zerolinecolor='#E5E7EB'),
-                hovermode="x unified"
+                xaxis=dict(title='WAVELENGTH OF LIGHT (µM)', gridcolor='rgba(0,0,0,0)', zerolinecolor='#000000', showline=True, linewidth=2, linecolor='black', title_font=dict(family='Inter', size=12, color='black')),
+                yaxis=dict(title='AMOUNT OF LIGHT BLOCKED', gridcolor='rgba(0,0,0,0)', zerolinecolor='#000000', showline=True, linewidth=2, linecolor='black', title_font=dict(family='Inter', size=12, color='black')),
+                hovermode="x unified",
+                font=dict(family="Inter", size=11, color="black", weight="bold")
             )
             st.plotly_chart(fig, use_container_width=True)
 
@@ -330,11 +367,11 @@ with tab_dash:
             
             # Dynamic Habitability Badge based on AI + Physics
             if final_hab_score >= 0.5:
-                badge = "<span style='color: #059669; font-weight: 600; background: #D1FAE5; padding: 3px 8px; border-radius: 6px; font-size: 0.85em; display: inline-block; margin-top: 8px;'>Potentially Habitable</span>"
+                badge = "<span style='color: #000000; font-weight: 900; background: #FFFFFF; border: 2px solid #000000; padding: 4px 12px; border-radius: 0px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-top: 8px;'>Potentially Habitable</span>"
             elif final_hab_score >= 0.2:
-                badge = "<span style='color: #B45309; font-weight: 600; background: #FEF3C7; padding: 3px 8px; border-radius: 6px; font-size: 0.85em; display: inline-block; margin-top: 8px;'>Marginal / Uncertain</span>"
+                badge = "<span style='color: #FF3000; font-weight: 900; background: #FFFFFF; border: 2px solid #FF3000; padding: 4px 12px; border-radius: 0px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-top: 8px;'>Marginal / Uncertain</span>"
             else:
-                badge = "<span style='color: #B91C1C; font-weight: 600; background: #FEE2E2; padding: 3px 8px; border-radius: 6px; font-size: 0.85em; display: inline-block; margin-top: 8px;'>Harsh Environment</span>"
+                badge = "<span style='color: #FFFFFF; font-weight: 900; background: #FF3000; border: 2px solid #FF3000; padding: 4px 12px; border-radius: 0px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-top: 8px;'>Harsh Environment</span>"
 
             st.markdown(f"""
             **Target:** {target}  
@@ -345,9 +382,9 @@ with tab_dash:
             """, unsafe_allow_html=True)
             
             if constraint_warnings:
-                st.markdown(f"<div style='margin-top: 10px; font-size: 0.8rem; color: #DC2626;'><b>Physics Constraint:</b> {' '.join(constraint_warnings)}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top: 10px; font-size: 0.8rem; color: #FF3000; text-transform: uppercase; font-weight: 900; letter-spacing: 0.05em;'><b>Physics Constraint:</b> {' '.join(constraint_warnings)}</div>", unsafe_allow_html=True)
             if st.session_state.get('flare_warning', False):
-                st.markdown(f"<div style='margin-top: 5px; font-size: 0.8rem; color: #DC2626; font-weight: 600;'>Intense Stellar Flare Detected! Ozone destroyed. Space weather highly volatile!</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='margin-top: 5px; font-size: 0.8rem; color: #FF3000; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em;'>Intense Stellar Flare Detected! Ozone destroyed. Space weather highly volatile!</div>", unsafe_allow_html=True)
 
             st.write("")
             st.write("")
@@ -357,7 +394,7 @@ with tab_dash:
                 for mol, prob in probas.items():
                     pct = int(prob * 100)
                     is_weak = pct < 50
-                    color_css = "background-color: #9CA3AF;" if is_weak else "background-color: #2563EB;"
+                    color_css = "background-color: #000000;" if is_weak else "background-color: #FF3000;"
                     
                     bar_html = f"""
                     <div class="strength-row">
@@ -384,26 +421,26 @@ with tab_spec:
         # Additional CO2 dips for detailed view
         if show_co2 and 'CO2' in features:
             for dip in [2.0, 4.3]:
-                fig_large.add_vrect(x0=dip-0.05, x1=dip+0.05, fillcolor="#6366F1", opacity=0.1, line_width=0)
+                fig_large.add_vrect(x0=dip-0.05, x1=dip+0.05, fillcolor="#000000", opacity=0.1, line_width=0)
                 
         # Instrument Masking Visualization (Task 1)
         if st.session_state.get('telescope') == "Hubble (Narrow Band)":
-            fig_large.add_vrect(x0=0.5, x1=1.0, fillcolor="#111827", opacity=0.1, line_width=0, annotation_text="Blind Spot", annotation_position="top left")
-            fig_large.add_vrect(x0=2.5, x1=10.0, fillcolor="#111827", opacity=0.1, line_width=0, annotation_text="Sensor Blind Spot", annotation_position="top right")
+            fig_large.add_vrect(x0=0.5, x1=1.0, fillcolor="#000000", opacity=0.1, line_width=0, annotation_text="Blind Spot", annotation_position="top left", annotation_font_color="#000")
+            fig_large.add_vrect(x0=2.5, x1=10.0, fillcolor="#000000", opacity=0.1, line_width=0, annotation_text="Sensor Blind Spot", annotation_position="top right", annotation_font_color="#000")
 
         # Explainability Highlighting (Task 3)
         model_ready = cnn_model is not None
         if model_ready:
-            explain_colors = {'O2': '#3B82F6', 'CH4': '#10B981', 'H2O': '#3B82F6', 'O3': '#8B5CF6', 'CO2': '#6366F1'}
+            explain_colors = {'O2': '#000000', 'CH4': '#000000', 'H2O': '#000000', 'O3': '#FF3000', 'CO2': '#000000'}
             explain_bands = {'O2': [0.76], 'CH4': [1.65, 2.3, 3.3], 'H2O': [1.4, 1.9, 2.7], 'O3': [9.6], 'CO2': [2.0, 4.3]}
             explain_added = False
             for mol_name, prob in probas.items():
                 if prob > 0.6: 
                     explain_added = True
                     for i, center in enumerate(explain_bands[mol_name]):
-                        fig_large.add_vrect(x0=center-0.05, x1=center+0.05, fillcolor=explain_colors[mol_name], opacity=0.25, layer="below", line_width=0, annotation_text=f"(AI) {mol_name}" if i == 0 else "", annotation_position="bottom right", annotation_font_size=10, annotation_font_color="#b91c1c")
+                        fig_large.add_vrect(x0=center-0.05, x1=center+0.05, fillcolor=explain_colors[mol_name], opacity=0.25, layer="below", line_width=0, annotation_text=f"(AI) {mol_name}" if i == 0 else "", annotation_position="bottom right", annotation_font_size=10, annotation_font_color="#FF3000")
             if explain_added:
-                st.markdown("<div style='font-size: 0.9rem; color: #b91c1c; padding: 10px 0px; font-weight: 600;'>Explainable AI Overlay Active: Tracing recognized absorption bands.</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size: 0.9rem; color: #FF3000; padding: 10px 0px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em;'>Explainable AI Overlay Active: Tracing recognized absorption bands.</div>", unsafe_allow_html=True)
 
         st.plotly_chart(fig_large, use_container_width=True)
     else:
@@ -462,19 +499,19 @@ with tab_docs:
         <div class="info-card" style="font-size: 0.9rem; line-height: 1.5;">
         <b>Wikipedia & Literature Connections:</b><br><br>
         
-        <a href="https://en.wikipedia.org/wiki/Exoplanet" target="_blank" style="text-decoration: none; color: #2563EB;"><b>Exoplanetary Science</b></a><br>
+        <a href="https://en.wikipedia.org/wiki/Exoplanet" target="_blank" style="text-decoration: none; color: #FF3000; border-bottom: 2px solid #FF3000; font-weight: 900; text-transform: uppercase;">Exoplanetary Science</a><br>
         The study of planets outside the Solar System. Exoplanetary research focuses heavily on identifying terrestrial (rocky) bodies orbiting M-dwarf and G-type host stars, as these are considered the most promising candidates for hosting biological life.<br><br>
         
-        <a href="https://en.wikipedia.org/wiki/Biosignature" target="_blank" style="text-decoration: none; color: #2563EB;"><b>Biosignatures</b></a><br>
+        <a href="https://en.wikipedia.org/wiki/Biosignature" target="_blank" style="text-decoration: none; color: #FF3000; border-bottom: 2px solid #FF3000; font-weight: 900; text-transform: uppercase;">Biosignatures</a><br>
         A biosignature is any substance—such as an element, isotope, or specific molecule—that provides scientific evidence of past or present life. In atmospheric science, identifying specific combinations of gas molecules is a primary focus.<br><br>
         
-        <a href="https://en.wikipedia.org/wiki/Transmission_spectroscopy" target="_blank" style="text-decoration: none; color: #2563EB;"><b>Transmission Spectroscopy</b></a><br>
+        <a href="https://en.wikipedia.org/wiki/Transmission_spectroscopy" target="_blank" style="text-decoration: none; color: #FF3000; border-bottom: 2px solid #FF3000; font-weight: 900; text-transform: uppercase;">Transmission Spectroscopy</a><br>
         The primary observational technique utilized by facilities like the James Webb Space Telescope (JWST). By analyzing the spectrum of starlight that filters through a planet's atmosphere during a transit event, we can detect specific molecular absorption lines.<br><br>
         
-        <a href="https://en.wikipedia.org/wiki/Circumstellar_habitable_zone" target="_blank" style="text-decoration: none; color: #2563EB;"><b>Circumstellar Habitable Zone</b></a><br>
+        <a href="https://en.wikipedia.org/wiki/Circumstellar_habitable_zone" target="_blank" style="text-decoration: none; color: #FF3000; border-bottom: 2px solid #FF3000; font-weight: 900; text-transform: uppercase;">Circumstellar Habitable Zone</a><br>
         Often referred to as the 'Goldilocks Zone', this is the theoretical orbital shell surrounding a star where planetary surface temperatures are optimal to support liquid water—a critical prerequisite for all known biological systems.<br><br>
         
-        <a href="https://en.wikipedia.org/wiki/Chemical_disequilibrium" target="_blank" style="text-decoration: none; color: #2563EB;"><b>Atmospheric Chemical Disequilibrium</b></a><br>
+        <a href="https://en.wikipedia.org/wiki/Chemical_disequilibrium" target="_blank" style="text-decoration: none; color: #FF3000; border-bottom: 2px solid #FF3000; font-weight: 900; text-transform: uppercase;">Atmospheric Chemical Disequilibrium</a><br>
         The core thermodynamic proxy used by Bionium-X. The simultaneous presence of highly reactive gases, such as Methane (CH₄) alongside Oxygen (O₂), violates standard thermodynamic equilibrium. On Earth, this persistent imbalance is actively driven and maintained by continuous biological respiration and photosynthesis.
         </div>
         """, unsafe_allow_html=True)
