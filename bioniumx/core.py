@@ -56,12 +56,19 @@ class BioniumXObject:
         filename : str
             Output file path.
         fmt : str, optional
-            Format: 'hdf5', 'fits', or 'ascii'. Default 'hdf5'.
+            Output format. Only ``'hdf5'`` is currently supported (the
+            default). Support for ``'fits'`` and ``'ascii'`` is planned but
+            not yet implemented.
+
+        Raises
+        ------
+        NotImplementedError
+            If ``fmt`` is not one of the currently supported formats.
 
         Examples
         --------
         >>> spec.write("K2-18b.h5")
-        >>> spec.write("K2-18b.fits", fmt="fits")
+        >>> spec.write("K2-18b.h5", fmt="hdf5")
         """
         from bioniumx.io import write_object
         write_object(self, filename, fmt=fmt)
@@ -76,12 +83,19 @@ class BioniumXObject:
         filename : str
             Input file path.
         fmt : str, optional
-            Format: 'hdf5', 'fits', or 'ascii'. Default 'hdf5'.
+            Input format. Only ``'hdf5'`` is currently supported (the
+            default). Support for ``'fits'`` and ``'ascii'`` is planned but
+            not yet implemented.
 
         Returns
         -------
         obj : BioniumXObject subclass
             Reconstructed object.
+
+        Raises
+        ------
+        NotImplementedError
+            If ``fmt`` is not one of the currently supported formats.
 
         Examples
         --------
