@@ -52,8 +52,8 @@ Bionium-X can be installed directly from the source repository itself. Our docum
 
 ```bash
 # Clone the repository
-git clone https://github.com/YourOrg/Bionium-X.git
-cd Bionium-X
+git clone https://github.com/omiii-215/BioniumX.git
+cd BioniumX
 
 # Initialize virtual environment
 python3 -m venv venv
