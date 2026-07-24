@@ -1,3 +1,17 @@
+import sys
+from unittest.mock import MagicMock
+import numpy as np
+
+class MockSpectrum:
+    def get(self, quantity, wunit="nm"):
+        wl = np.linspace(800.0, 3100.0, 1000)
+        absorbance = np.exp(-((wl - 1400.0) / 100.0) ** 2) + np.exp(-((wl - 1900.0) / 150.0) ** 2)
+        return wl, absorbance
+
+mock_radis = MagicMock()
+mock_radis.calc_spectrum.return_value = MockSpectrum()
+sys.modules["radis"] = mock_radis
+
 import pytest
 from bioniumx.molecules import BIOSIGNATURE_MOLECULES, get_template, compute_disequilibrium
 
