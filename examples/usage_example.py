@@ -10,7 +10,7 @@ from bioniumx.datasets.ingestion import load_spectrum
 from bioniumx.spectra import TransmissionSpectrum
 from bioniumx.preprocessing import savitzky_golay
 from bioniumx.detection import cross_correlate_template
-from bioniumx.molecules import get_template, compute_disequilibrium
+from bioniumx.molecules import get_template, get_templates_parallel, compute_disequilibrium
 from bioniumx.physics import habitability_score
 
 def main():
@@ -40,8 +40,20 @@ def main():
 
     # 5. Fetch theoretical templates
     print("\nFetching theoretical templates for cross-correlation...")
-    wl_h2o, depth_h2o = get_template("H2O", resolving_power=100)
-    wl_co2, depth_co2 = get_template("CO2", resolving_power=100)
+    # Option 1: Fetch sequentially (traditional, slower for many molecules)
+    # wl_h2o, depth_h2o = get_template("H2O", resolving_power=100)
+    # wl_co2, depth_co2 = get_template("CO2", resolving_power=100)
+    
+    # Option 2: Fetch in parallel (RECOMMENDED - much faster for opacity grids!)
+    # When building large grids with many molecules, parallel fetching drastically
+    # reduces execution time by downloading HITRAN data concurrently
+    templates = get_templates_parallel(
+        ["H2O", "CO2"],
+        resolving_power=100,
+        max_workers=2  # Adjust based on system/network capacity
+    )
+    wl_h2o, depth_h2o = templates["H2O"]
+    wl_co2, depth_co2 = templates["CO2"]
 
     # 6. Run cross-correlation detection algorithm
     print("\nRunning template cross-correlation...")

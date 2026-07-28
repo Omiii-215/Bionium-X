@@ -2,6 +2,8 @@
 Biosignature molecule catalog and templates.
 """
 import numpy as np
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, List, Tuple, Optional
 
 
 BIOSIGNATURE_MOLECULES = {
@@ -94,3 +96,87 @@ def get_template(molecule: str, resolving_power: float = 100):
         depth_interp = depth_interp / np.max(depth_interp)
 
     return wl_grid, depth_interp
+
+
+def get_templates_parallel(
+    molecules: List[str],
+    resolving_power: float = 100,
+    max_workers: Optional[int] = None
+) -> Dict[str, Tuple[np.ndarray, np.ndarray]]:
+    """
+    Fetch multiple molecular templates in parallel using ThreadPoolExecutor.
+    
+    This function solves the IO bottleneck when building large opacity grids by
+    downloading HITRAN spectral data concurrently. Since template fetching is
+    heavily IO-bound (network requests), parallel threading drastically reduces
+    total execution time compared to sequential fetching.
+
+    Parameters
+    ----------
+    molecules : List[str]
+        List of chemical formulas to fetch (e.g., ['H2O', 'CH4', 'CO2']).
+    resolving_power : float, optional
+        Spectral resolving power R = λ/Δλ for all templates. Default 100.
+    max_workers : int, optional
+        Maximum number of concurrent download threads. If None, uses a reasonable
+        default (typically 4-8 threads depending on CPU count). For most systems,
+        2-4 workers is optimal to avoid overwhelming network/HITRAN servers.
+
+    Returns
+    -------
+    templates : Dict[str, Tuple[np.ndarray, np.ndarray]]
+        Dictionary mapping molecule names to (wavelength, depth) tuples.
+        E.g., {'H2O': (wl_array, depth_array), 'CH4': (wl_array, depth_array)}.
+
+    Raises
+    ------
+    ValueError
+        If any molecule is not in the catalog.
+    
+    Examples
+    --------
+    >>> molecules = ['H2O', 'CH4', 'CO2', 'O2']
+    >>> templates = get_templates_parallel(molecules, resolving_power=100, max_workers=2)
+    >>> wl_h2o, depth_h2o = templates['H2O']
+    
+    Notes
+    -----
+    - This function is ideal for building opacity grids with many molecules.
+    - ThreadPoolExecutor is used because template fetching is IO-bound (network requests)
+      rather than CPU-bound, allowing significant speedup with threading.
+    - Consider using max_workers=2-4 to avoid overwhelming HITRAN servers.
+    - Individual fetch errors are captured and re-raised with full context.
+    """
+    if not molecules:
+        return {}
+    
+    # Set reasonable default: min(4, number of molecules) to avoid overwhelming servers
+    if max_workers is None:
+        max_workers = min(4, len(molecules))
+    
+    templates = {}
+    futures_to_molecule = {}
+    
+    print(f"Parallel fetch initiated for {len(molecules)} molecules using {max_workers} workers...")
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all fetch tasks
+        for molecule in molecules:
+            future = executor.submit(get_template, molecule, resolving_power)
+            futures_to_molecule[future] = molecule
+        
+        # Collect results as they complete
+        for future in as_completed(futures_to_molecule):
+            molecule = futures_to_molecule[future]
+            try:
+                wl, depth = future.result()
+                templates[molecule] = (wl, depth)
+                print(f"  ✓ {molecule} template fetched successfully")
+            except Exception as e:
+                print(f"  ✗ Error fetching {molecule}: {e}")
+                raise ValueError(
+                    f"Failed to fetch template for {molecule}: {str(e)}"
+                ) from e
+    
+    print(f"Parallel fetch complete: {len(templates)}/{len(molecules)} templates ready")
+    return templates
