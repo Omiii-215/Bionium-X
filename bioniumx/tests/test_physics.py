@@ -25,6 +25,39 @@ def test_mean_molecular_weight():
     mu = mean_molecular_weight({"H2": 0.85, "He": 0.15})
     assert 2.0 < mu < 3.0
 
+
+def test_mean_molecular_weight_normalizes_fractions():
+    mu_unscaled = mean_molecular_weight({"H2": 85, "He": 15})
+    mu_scaled = mean_molecular_weight({"H2": 0.85, "He": 0.15})
+    assert mu_unscaled == mu_scaled
+
+
+def test_mean_molecular_weight_rejects_unknown_species():
+    import pytest
+
+    with pytest.raises(ValueError, match="Unknown molecule weight"):
+        mean_molecular_weight({"H2": 1.0, "Xe": 0.0})
+
+
+def test_mean_molecular_weight_rejects_empty_abundances():
+    import pytest
+
+    with pytest.raises(ValueError, match="at least one positive mole fraction"):
+        mean_molecular_weight({})
+
+
+def test_atmosphere_public_api_docstrings():
+    import inspect
+    from bioniumx.physics import atmosphere
+
+    for name in ("mean_molecular_weight", "scale_height"):
+        obj = getattr(atmosphere, name)
+        doc = inspect.getdoc(obj)
+        assert doc is not None
+        assert "Parameters" in doc
+        assert "Returns" in doc
+
+
 def test_scale_height():
     H = scale_height(255, 28.97, 9.81)
     assert 7000 < H < 9000  # ~8km for Earth
