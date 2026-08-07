@@ -52,8 +52,13 @@ class SpectrumGenerator:
 
         # Ensure flux doesn't drop below 0 unrealistically
         flux = np.clip(flux, 0, None)
+        # Return the 1-sigma uncertainty (noise level) per channel, not the
+        # signed noise realization. The realization is added to flux above;
+        # the third return value is the uncertainty array consumed by
+        # TransmissionSpectrum(err=...) / snr(), which must be non-negative.
+        uncertainty = np.full(self.num_points, noise_level)
 
-        return self.wavelengths, flux, noise
+        return self.wavelengths, flux, uncertainty
 
     def generate_dataset(self, n_samples=1000):
         """
