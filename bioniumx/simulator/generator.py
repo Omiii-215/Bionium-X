@@ -50,8 +50,14 @@ class SpectrumGenerator:
         noise = np.random.normal(0, noise_level, self.num_points)
         flux += noise
 
+        
         # Ensure flux doesn't drop below 0 unrealistically
         flux = np.clip(flux, 0, None)
+
+        # Prevent NaN propagation: zero out low-SNR regions in-place
+        snr = flux / (noise_level + 1e-10)
+        valid_mask = snr >= 1.0
+        flux = np.where(valid_mask, flux, 0.0)
 
         return self.wavelengths, flux, noise
 
