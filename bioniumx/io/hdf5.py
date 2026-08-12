@@ -6,6 +6,9 @@ Only the HDF5 format is currently implemented. Support for ``'fits'`` and
 raises :class:`NotImplementedError` with a message listing the formats that
 are currently supported.
 """
+import os
+import tempfile
+
 import h5py
 import numpy as np
 
@@ -30,11 +33,25 @@ def write_object(obj, filename: str, fmt: str = "hdf5"):
     Only ``fmt='hdf5'`` is currently supported; any other value raises
     :class:`NotImplementedError`.
     """
-    if fmt == "hdf5":
-        with h5py.File(filename, "w") as f:
+    if fmt != "hdf5":
+        raise _unsupported_format_error(fmt)
+
+    directory = os.path.dirname(os.path.abspath(filename)) or "."
+
+    fd, tmp_name = tempfile.mkstemp(
+        dir=directory,
+        prefix=".tmp_",
+        suffix=".h5",
+    )
+    os.close(fd)
+
+    try:
+        with h5py.File(tmp_name, "w") as f:
             f.attrs["class_name"] = obj.__class__.__name__
+
             for attr in obj._required_attrs:
                 f.create_dataset(attr, data=getattr(obj, attr))
+
             if hasattr(obj, "err"):
                 f.create_dataset("err", data=obj.err)
 
@@ -42,8 +59,15 @@ def write_object(obj, filename: str, fmt: str = "hdf5"):
             for k, v in obj.meta.items():
                 if v is not None:
                     meta_group.attrs[k] = v
-    else:
-        raise _unsupported_format_error(fmt)
+
+            f.flush()
+
+        os.replace(tmp_name, filename)
+
+    except Exception:
+        if os.path.exists(tmp_name):
+            os.remove(tmp_name)
+        raise
 
 
 def read_object(cls, filename: str, fmt: str = "hdf5"):

@@ -2,6 +2,7 @@ import re
 
 import numpy as np
 import pytest
+import h5py
 
 from bioniumx.core import BioniumXObject
 from bioniumx.io import SUPPORTED_FORMATS, read_object, write_object
@@ -64,3 +65,64 @@ class TestDocstringHonesty:
     def test_no_runnable_unsupported_format_example(self, doc):
         # e.g. `spec.write("K2-18b.fits", fmt="fits")` used to be documented but raises.
         assert not re.search(r"""fmt=["'](fits|ascii)["']""", doc)
+
+
+class TestAtomicHDF5Writes:
+    def test_failed_write_preserves_existing_file(self, spectrum, tmp_path, monkeypatch):
+        path = tmp_path / "atomic.h5"
+
+        spectrum.write(str(path))
+        original = TransmissionSpectrum.read(str(path))
+
+        original_create_dataset = h5py.File.create_dataset
+        calls = {"count": 0}
+
+        def failing_create_dataset(self, *args, **kwargs):
+            calls["count"] += 1
+            if calls["count"] == 2:
+                raise RuntimeError("Injected failure")
+            return original_create_dataset(self, *args, **kwargs)
+
+        monkeypatch.setattr(
+            h5py.File,
+            "create_dataset",
+            failing_create_dataset,
+        )
+
+        with pytest.raises(RuntimeError):
+            spectrum.write(str(path))
+
+        loaded = TransmissionSpectrum.read(str(path))
+
+        np.testing.assert_allclose(
+            loaded.wavelength,
+            original.wavelength,
+        )
+        np.testing.assert_allclose(
+            loaded.transit_depth,
+            original.transit_depth,
+        )
+
+    def test_failed_write_new_file_leaves_no_partial_file(
+        self,
+        spectrum,
+        tmp_path,
+        monkeypatch,
+    ):
+        path = tmp_path / "new_file.h5"
+
+        original_create_dataset = h5py.File.create_dataset
+
+        def failing_create_dataset(self, *args, **kwargs):
+            raise RuntimeError("Injected failure")
+
+        monkeypatch.setattr(
+            h5py.File,
+            "create_dataset",
+            failing_create_dataset,
+        )
+
+        with pytest.raises(RuntimeError):
+            spectrum.write(str(path))
+
+        assert not path.exists()
